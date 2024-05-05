@@ -1,0 +1,3 @@
+<a class="navbar-brand d-flex align-items-center" href="{{ route('animes.index') }}">
+                        <img src="{{URL::asset('/assets/logo.png')}}"  alt="logo..." width="110">
+                    </a>
