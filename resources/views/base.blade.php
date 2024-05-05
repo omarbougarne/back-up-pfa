@@ -97,35 +97,39 @@
             @yield('content')
         </div>
     </div>
+
     <footer class="mt-5 text-light py-4" style="background-image: linear-gradient(to right, #2c3e50, #3498db); box-shadow: 0px -5px 10px rgba(0, 0, 0, 0.5);">
         <div class="container">
             <div class="row">
                 <div class="col-md-4">
-                    <h5>About Us</h5>
-                    <p>Cool anime Website</p>
+                    <h5 class="fw-bold text-info">About Us</h5>
+                    <p>Welcome to Cool Anime Website! We're dedicated to providing you with the latest news, reviews, and updates about your favorite anime.</p>
                 </div>
+                <div class="col-md-4">
+                    <h5>Stay Connected</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-envelope fw-bold text-info"></i> Email: contact@coolanimewebsite.com</li>
+                        <li><i class="fas fa-phone fw-bold text-info"></i> Phone: +1234567890</li>
+                        <li><i class="fas fa-map-marker-alt fw-bold text-info"></i> Address: 123 Anime Street, Otaku Town, Japan</li>
+                    </ul>
+                </div>
+
                 <div class="col-md-4">
                     <h5>Contact Us</h5>
                     <ul class="list-unstyled">
-                        <li>Email: contact@example.com</li>
-                        <li>Phone: +1234567890</li>
-                        <li>Address: 123 Street, City, Country</li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h5>Follow Us</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li>
-                        <li><a href="#"><i class="fab fa-twitter"></i> Twitter</a></li>
-                        <li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li>
+                        <li><a href="https://www.facebook.com/myanimelist" target="_blank" class="fw-bold text-info"><i class="fab fa-facebook"></i> Facebook</a></li>
+                        <li><a href="https://twitter.com/myanimelist" target="_blank" class="fw-bold text-info"><i class="fab fa-twitter"></i> Twitter</a></li>
+                        <li><a href="https://www.instagram.com/myanimelist/" target="_blank" class="fw-bold text-info"><i class="fab fa-instagram"></i> Instagram</a></li>
                     </ul>
                 </div>
             </div>
         </div>
         <div class="text-center py-2">
-            <small>&copy; 2024 Animes. All rights reserved.</small>
+            <small>&copy; 2024 Cool <span class="fw-bold text-info">Anime</span>  Website. All rights reserved.</small>
         </div>
     </footer>
+
+
 
 
     <script src="https://kit.fontawesome.com/f2866a4178.js" crossorigin="anonymous"></script>

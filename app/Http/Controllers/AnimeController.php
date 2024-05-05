@@ -18,31 +18,63 @@ class AnimeController extends Controller
     public function index(Request $request)
 {
     $search = $request->query('search');
+    $category = $request->query('category');
+    $studio = $request->query('studio');
+
+    $query = Anime::query();
 
     if ($search) {
-        $animes = Anime::where(DB::raw('LOWER(title)'), 'LIKE', '%' . strtolower($search) . '%')
-            ->with('studio')
-            ->get(); // Removing paginate
-    } else {
-        $animes = Anime::with('studio')->get(); // Removing paginate
+        $query->where(DB::raw('LOWER(title)'), 'LIKE', '%' . strtolower($search) . '%');
     }
 
-    // Fetching the latest anime added
+    if ($category) {
+        $query->where('category', $category);
+    }
+
+    if ($studio) {
+        $query->whereHas('studio', function ($query) use ($studio) {
+            $query->where('name', $studio);
+        });
+    }
+
+    $animes = $query->with('studio')->get();
+
+
     $latestAnime = Anime::latest()->first();
+
+
+    $categories = Anime::distinct('category')->pluck('category');
+
+
+    $studios = Studio::all();
 
     return view('anime.index')->with([
         'animes' => $animes,
-        'latestAnime' => $latestAnime, // passing the latest anime to the view
+        'latestAnime' => $latestAnime,
+        'categories' => $categories,
+        'studios' => $studios,
     ]);
 }
 
 
-// Import the User model if not already imported
+
+
+
 
 public function userList(Request $request)
 {
-    $user = Auth::user(); // Retrieve the authenticated user
-    $animes = $user->animes; // Retrieve animes associated with the authenticated user
+    $user = Auth::user();
+    $status = $request->query('status');
+
+
+    $animes = $user->animes();
+
+    if ($status) {
+        $animes->where('status', $status);
+    }
+
+    $animes = $animes->get();
+
     return view('anime.user_list')->with('animes', $animes)->with('user', $user);
 }
 
@@ -50,10 +82,11 @@ public function userList(Request $request)
 
 
 
-// Inside your controller method
+
+
 public function addToUserList(Request $request, $id)
 {
-    // Retrieve the authenticated user's ID
+
     $userId = Auth::id();
 
     $anime = Anime::find($id);
@@ -61,7 +94,7 @@ public function addToUserList(Request $request, $id)
         return redirect(route('animes.index'))->with('error', 'Anime not found');
     }
 
-    // Attach the anime to the authenticated user's list
+
     $user = Auth::user();
     $user->animes()->attach($anime, ['user_id' => $userId]);
 
@@ -86,11 +119,11 @@ public function removeFromUserList($id)
 
 public function showUserList($userId)
 {
-    // Retrieve the user's list of anime
-    $user = User::findOrFail($userId); // Assuming you have a User model
+
+    $user = User::findOrFail($userId);
     $animes = $user->animes()->with('studio')->get();
 
-    // Pass the user and the list of anime to the view
+
     return view('anime.user_list', ['animes' => $animes, 'user' => $user]);
 }
 
@@ -117,7 +150,6 @@ public function removeFromList(Request $request, $id)
         return redirect(route('animes.index'))->with('error', 'Anime not found');
     }
 
-    // Remove the anime from the database
     $anime->delete();
 
     return redirect(route('animes.index'))->with('success', $anime->title . ' has been removed');
@@ -126,8 +158,8 @@ public function removeFromList(Request $request, $id)
 public function create()
 {
     $studios = StudioController::getStudios();
-    $mangas = Manga::all(); // Fetch all mangas
-    $categories = ['action', 'comedy', 'drama', 'adventure', 'fantasy', 'sci-fi', 'mystery', 'thriller', 'sports', 'supernatural', 'historical']; // Define categories
+    $mangas = Manga::all();
+    $categories = ['action', 'comedy', 'drama', 'adventure', 'fantasy', 'sci-fi', 'mystery', 'thriller', 'sports', 'supernatural', 'historical'];
 
     return view('anime.create')->with('studios', $studios)->with('mangas', $mangas)->with('categories', $categories);
 }
@@ -147,19 +179,14 @@ public function store(Request $request)
             $anime->image = $request->image->store('images', 'public');
         }
 
-        // Attach manga_id to the anime
         $anime->manga_id = $request->input('manga_id');
-
         $anime->studio_id = $request->input('studio');
-
-        // Add category
 
 
         $anime->save();
 
         return redirect(route('animes.index'));
     } catch (\Exception $e) {
-        // Log or display the error message
         dd($e->getMessage());
     }
 }
@@ -167,31 +194,17 @@ public function store(Request $request)
 
 public function showUserRating($id)
 {
-    // Find the anime
     $anime = Anime::findOrFail($id);
-
-    // Get the authenticated user's rating for the anime
     $userRating = auth()->user()->animes()->find($anime->id)->pivot->rating ?? null;
-
-    // Pass the anime and user rating to the view
     return view('anime.show', compact('anime', 'userRating'));
 }
 
-
-
-
-
 public function addUserRating(Request $request, $id)
 {
-    // Validate the request data
     $request->validate([
-        'rating' => 'required|numeric|min:1|max:10', // Adjust validation rules as needed
+        'rating' => 'required|numeric|min:1|max:10',
     ]);
-
-    // Find the anime by its ID
     $anime = Anime::findOrFail($id);
-
-    // Attach the user's rating to the anime using the pivot table
     auth()->user()->animes()->syncWithoutDetaching([$anime->id => [
         'rating' => $request->rating,
     ]]);
@@ -226,22 +239,19 @@ public function deleteUserRating(Request $request, $id)
      */
     public function show($id)
 {
-    // Find the anime along with its status
     $anime = Anime::with(['episodes', 'comments'])->findOrFail($id);
     $comment = new Comment();
-    // Get the authenticated user's rating and status for the anime
     $userAnime = auth()->user()->animes()->find($anime->id)->pivot ?? null;
     $userRating = $userAnime ? $userAnime->rating : null;
     $userStatus = $userAnime ? $userAnime->status : null;
-
-    // Pass the anime, comment, user rating, and user status to the view
+    $userAvatar = auth()->user()->avatar;
+    $userName = auth()->user()->name;
     if ($anime) {
-        return view('anime.show', compact('anime', 'comment', 'userRating', 'userStatus'));
+        return view('anime.show', compact('anime', 'comment', 'userRating', 'userStatus', 'userAvatar', 'userName'));
     } else {
         return abort(404);
     }
 }
-
 
     public function updateStatus(Request $request, Anime $anime)
     {
@@ -253,13 +263,6 @@ public function deleteUserRating(Request $request, $id)
 
         return redirect()->back()->with('success', 'Status updated successfully.');
     }
-
-
-
-
-
-
-
 
     /**
      * Show the form for editing the specified resource.
@@ -362,22 +365,6 @@ public function deleteUserRating(Request $request, $id)
         return back();
     }
 
-    // public function updateWatched(Request $request, $id)
-    // {
-    //     // Validating the input
-    //     // $request->validate([
-    //     //     'watched' => 'required|integer|min:0|max:' . Anime::find($id)->episodes,
-    //     // ]);
-
-    //     // Find the entry in the pivot table for this anime and user
-    //     $userAnime = $request->animes()->where('anime_id', $id)->first();
-
-    //     // Update "watched" in the pivot table
-    //     $userAnime->pivot->update(['watched' => $request->watched]);
-
-    //     return redirect(route('animes.user_list'));
-    // }
-
     public function storeComment(Request $request, $id)
 {
     $request->validate([
@@ -388,7 +375,7 @@ public function deleteUserRating(Request $request, $id)
 
     $comment = new Comment;
     $comment->body = $request->body;
-    $comment->user_id = $request->user()->id; // Assign the user ID
+    $comment->user_id = $request->user()->id;
 
     $anime->comments()->save($comment);
 

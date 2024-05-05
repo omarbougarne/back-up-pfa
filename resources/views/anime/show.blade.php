@@ -67,106 +67,104 @@
         @endcan
     </div>
 
-        <div class="col-md-4">
-            <h3 class="fw-bold text-white">Ratings</h3>
-            <hr>
-            <form method="post" action="{{ route('animes.adduserrating', $anime->id) }}">
-                @csrf
-                <div class="input-group">
-                    <input  name="rating" id="rating" class="form-control" placeholder="Add Rating"/>
-        <button type="submit" class="btn btn-success ">
-            Add
-        </button>
-                </div>
-            </form>
-            <br>
-            <form method="post" action="{{ route('animes.edituserrating', $anime->id) }}">
-                @csrf
-                @method('PATCH')
-                <div class="input-group">
-                    <input name="rating" id="rating" class="form-control " placeholder="Edit Rating"/>
-                    <button type="submit" class="btn btn-primary">
-                        Edit
-                    </button>
-                </div>
-            </form>
-            <br>
-            <form method="post" action="{{ route('animes.deleteuserrating', $anime->id) }}">
-                @csrf
-                @method('DELETE')
-                <div class="input-group">
-                    <button type="submit" class="btn btn-danger">
-                        Delete
-                    </button>
-                </div>
-            </form>
-        </div>
-
+    <div class="col-md-4">
+        <h3 class="fw-bold text-white">Ratings</h3>
         <hr>
-        <form method="post" action="{{ isset($comment->id) ? route('comments.update', $comment->id) : route('animes.comments.store', $anime->id) }}">
+        <form method="post" action="{{ route('animes.adduserrating', $anime->id) }}">
             @csrf
-            @if(isset($comment->id))
-                @method('PATCH')
-            @endif
-            <label for="body" class="text-white">Make a comment:</label>
             <div class="input-group">
-                <input name="body" id="body" class="form-control col-10" value="{{ $comment->body }}"/>
-                <button type="submit" class="btn btn-primary col-2">
-                    <i class="fa fa-send"></i>
+                <input  name="rating" id="rating" class="form-control" placeholder="Add Rating"/>
+                <button type="submit" class="btn btn-success ">
+                    Add
                 </button>
             </div>
         </form>
-        <h4 class="fw-bold text-white">Comments</h4>
-        <div class="comment-section overflow-auto mt-3" style="max-height: 450px;">
-            @foreach($anime->comments as $comment)
-    <div class="card border border-3 border-secondary mb-3">
-        <div class="card-body">
-            {{-- Comment body --}}
-            <p class="mt-2">{{ $comment->body }}</p>
+        <br>
+        <form method="post" action="{{ route('animes.edituserrating', $anime->id) }}">
+            @csrf
+            @method('PATCH')
+            <div class="input-group">
+                <input name="rating" id="rating" class="form-control " placeholder="Edit Rating"/>
+                <button type="submit" class="btn btn-primary">
+                    Edit
+                </button>
+            </div>
+        </form>
+        <br>
+        <form method="post" action="{{ route('animes.deleteuserrating', $anime->id) }}">
+            @csrf
+            @method('DELETE')
+            <div class="input-group">
+                <button type="submit" class="btn btn-danger">
+                    Delete
+                </button>
+            </div>
+        </form>
+    </div>
 
-            <div class="d-flex align-items-center mt-2">
-                {{-- Edit and delete buttons --}}
-                <div class="ms-auto">
-                    <form action="{{ route('comments.edit', $comment->id) }}" method="get" style="display: inline;">
-                        <button type="submit" class="btn btn-primary btn-sm" style="border-radius: 30px;">Edit</button>
-                    </form>
-                    <form action="{{ route('comments.delete', $comment->id) }}" method="post" style="display: inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm" style="border-radius: 30px;">Delete</button>
-                    </form>
+    <hr>
+    <form method="post" action="{{ isset($comment->id) ? route('comments.update', $comment->id) : route('animes.comments.store', $anime->id) }}">
+        @csrf
+        @if(isset($comment->id))
+            @method('PATCH')
+        @endif
+        <label for="body" class="text-white">Make a comment:</label>
+        <div class="input-group">
+            <input name="body" id="body" class="form-control col-10" value="{{ $comment->body }}"/>
+            <button type="submit" class="btn btn-primary col-2">
+                <i class="fa fa-send"></i>
+            </button>
+        </div>
+    </form>
+    <h4 class="fw-bold text-white">Comments</h4>
+    <div class="comment-section overflow-auto mt-3" style="max-height: 450px;">
+        @foreach($anime->comments as $comment)
+            <div class="card border border-3 border-secondary mb-3">
+                <div class="card-body">
+                    {{-- Comment body --}}
+                    <p class="mt-2">{{ $comment->body }}</p>
+
+                    {{-- User avatar and name --}}
+                    <div class="d-flex align-items-center mt-2">
+                        <img src="{{ asset("storage/{$comment->user->avatar}") }}" class="rounded-circle" width="50" height="50" alt="">
+
+                        <div class="mx-3 fw-bold">{{ $comment->user->name }}</div>
+
+                        {{-- Edit and delete buttons --}}
+                        <div class="ms-auto">
+                            <form action="{{ route('comments.edit', $comment->id) }}" method="get" style="display: inline;">
+                                <button type="submit" class="btn btn-primary btn-sm" style="border-radius: 30px;">Edit</button>
+                            </form>
+                            <form action="{{ route('comments.delete', $comment->id) }}" method="post" style="display: inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm" style="border-radius: 30px;">Delete</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-
+        @endforeach
     </div>
-            @endforeach
-</div>
 </div>
 <div class="mb-3" ">
     <h3 class="mb-3 fw-bold text-white">Episodes:</h3>
     @foreach($anime->episodes as $episode)
-    <div class="card border border-3 border-secondary mb-3" style="background: linear-gradient(to bottom right, #808080, #00FFFF);">
-        <div class="card-body">
-            <h5 class="card-title fw-bold text-white">Episode {{ $episode->number }}: {{ $episode->title }}</h5>
-            <p class="card-text fw-bold text-white">Air Date: {{ $episode->air_date ?? 'N/A' }}</p>
-            <p class="card-text fw-bold text-white">Summary: {{ $episode->summary ?? 'N/A' }}</p>
-            <a href="https://www.crunchyroll.com/" class="btn btn-success" target="_blank">Watch on Crunchyroll</a>
+        <div class="card border border-3 border-secondary mb-3" style="background: linear-gradient(to bottom right, #808080, #00FFFF);">
+            <div class="card-body">
+                <h5 class="card-title fw-bold text-white">Episode {{ $episode->number }}: {{ $episode->title }}</h5>
+                <p class="card-text fw-bold text-white">Air Date: {{ $episode->air_date ?? 'N/A' }}</p>
+                <p class="card-text fw-bold text-white">Summary: {{ $episode->summary ?? 'N/A' }}</p>
+                <a href="https://www.crunchyroll.com/" class="btn btn-success" target="_blank">Watch on Crunchyroll</a>
+            </div>
         </div>
-    </div>
-
     @endforeach
 </div>
 
-    @can('isAdmin')
-
-
-    <div class="mt-3">
-        <a href="{{ route('episodes.create', ['anime_id' => $anime->id]) }}" class="btn btn-success">Add New Episode</a>
-    </div>
-    @endcan
+@can('isAdmin')
+<div class="mt-3">
+    <a href="{{ route('episodes.create', ['anime_id' => $anime->id]) }}" class="btn btn-success">Add New Episode</a>
 </div>
+@endcan
 
 @endsection
-{{-- <img src="{{ url("storage/images/{$comment->user->avatar}") }}" class="rounded-circle" width="50" height="50" alt="">
-                <div class="mx-3 fw-bold">{{ $comment->user->name }}</div> --}}

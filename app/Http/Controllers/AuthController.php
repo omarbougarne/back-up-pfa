@@ -26,7 +26,7 @@ public function register(Request $request)
         'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif',
     ]);
 
-    // Handle the avatar upload
+
     if ($request->hasFile('avatar')) {
         $avatarPath = $request->file('avatar')->store('avatars', 'public');
     } else {
@@ -34,7 +34,7 @@ public function register(Request $request)
     }
 
 
-    // Create the user
+
     $user = User::create([
         'name' => $request->name,
         'email' => $request->email,
@@ -74,4 +74,29 @@ public function logout(Request $request)
 
     return redirect('/');
 }
+public function editProfile()
+{
+    $user = Auth::user();
+    return view('profile.edit', compact('user'));
+}
+
+public function updateProfile(Request $request)
+{
+    $user = Auth::user();
+    $user->update($request->all());
+    return redirect()->route('profile.edit')->with('success', 'Profile updated successfully!');
+}
+
+public function destroyProfile()
+{
+    $user = Auth::user();
+
+    if ($user) {
+        $user->delete();
+        Auth::logout();
+    }
+
+    return redirect()->route('animes.index')->with('success', 'Your profile has been deleted!');
+}
+
 }

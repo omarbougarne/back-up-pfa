@@ -29,19 +29,19 @@ class MangaController extends Controller
      */
     public function store(Request $request)
     {
-        // Validate the incoming request
+
         $request->validate([
             'name' => 'required|string|max:255',
-            // Add validation rules for other fields as needed
+
         ]);
 
-        // Create a new manga instance
+
         $manga = new Manga();
         $manga->name = $request->input('name');
-        // Set other fields as needed
+
         $manga->save();
 
-        // Redirect to the index page with a success message
+
         return redirect()->route('mangas.index')->with('success', 'Manga created successfully.');
     }
 
@@ -59,8 +59,8 @@ class MangaController extends Controller
      */
     public function edit(string $id)
 {
-    $manga = Manga::findOrFail($id); // Change variable name to $manga
-    return view('mangas.edit', compact('manga')); // Pass $manga to the view
+    $manga = Manga::findOrFail($id);
+    return view('mangas.edit', compact('manga'));
 }
 
 
@@ -69,21 +69,21 @@ class MangaController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // Validate the incoming request
+
         $request->validate([
             'name' => 'required|string|max:255',
-            // Add validation rules for other fields as needed
+
         ]);
 
-        // Find the manga by ID
+
         $manga = Manga::findOrFail($id);
 
-        // Update the manga with the new data
+
         $manga->name = $request->input('name');
-        // Update other fields as needed
+
         $manga->save();
 
-        // Redirect to the index page with a success message
+
         return redirect()->route('mangas.index')->with('success', 'Manga updated successfully.');
     }
 
@@ -92,11 +92,11 @@ class MangaController extends Controller
      */
     public function destroy(string $id)
     {
-        // Find the manga by ID and delete it
+
         $manga = Manga::findOrFail($id);
         $manga->delete();
 
-        // Redirect to the index page with a success message
+
         return redirect()->route('mangas.index')->with('success', 'Manga deleted successfully.');
     }
 }

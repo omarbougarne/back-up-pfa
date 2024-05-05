@@ -17,14 +17,14 @@ class AdminController extends Controller{
 
     public function softDelete(User $user)
     {
-        $user->delete(); // Soft delete the user
+        $user->delete();
         return redirect()->route('admin.users')->with('success', 'User soft deleted successfully');
     }
 
     public function restore($id)
     {
         $user = User::withTrashed()->findOrFail($id);
-        $user->restore(); // Restore the soft deleted user
+        $user->restore();
         return redirect()->route('admin.users')->with('success', 'User restored successfully');
     }
 }
