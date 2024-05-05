@@ -121,16 +121,11 @@
         @foreach($anime->comments as $comment)
             <div class="card border border-3 border-secondary mb-3">
                 <div class="card-body">
-                    {{-- Comment body --}}
                     <p class="mt-2">{{ $comment->body }}</p>
-
-                    {{-- User avatar and name --}}
                     <div class="d-flex align-items-center mt-2">
                         <img src="{{ asset("storage/{$comment->user->avatar}") }}" class="rounded-circle" width="50" height="50" alt="">
 
                         <div class="mx-3 fw-bold">{{ $comment->user->name }}</div>
-
-                        {{-- Edit and delete buttons --}}
                         <div class="ms-auto">
                             <form action="{{ route('comments.edit', $comment->id) }}" method="get" style="display: inline;">
                                 <button type="submit" class="btn btn-primary btn-sm" style="border-radius: 30px;">Edit</button>

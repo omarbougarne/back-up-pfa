@@ -22,19 +22,18 @@ use Illuminate\Support\Facades\Route;
 });
 
 
-    Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
-    Route::post('/register', [AuthController::class, 'register'])->name('register.post');
-    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [AuthController::class, 'login'])->name('login');
+    Route::middleware('guest')->group(function () {
+        Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
+        Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+        Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+        Route::post('/login', [AuthController::class, 'login'])->name('login');
+
+    });
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-
-
     Route::get('/profile/edit', [AuthController::class, 'editProfile'])->name('profile.edit');
-    Route::patch('/profile/update', [AuthController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/profile/update', [AuthController::class, 'updateProfile'])->name('profile.update');
     Route::delete('/profile/destroy', [AuthController::class, 'destroyProfile'])->name('profile.destroy');
-
-
 
     Route::get('/animes/add/{id}', [AnimeController::class, 'addToUserList'])->name('animes.addToUserList');
     Route::get('/animes/remove/{id}', [AnimeController::class, 'removeFromUserList']);

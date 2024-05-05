@@ -43,26 +43,36 @@
         @foreach ($animes->groupBy('category') as $category => $animeGroup)
             <div class="row">
                 <div class="col-12">
-                    <h5 class="text-white fw-bold text-center" style="border-bottom: 2px solid white;">{{ ucfirst($category) }}</h5>
+                    <h5 class="fw-bold text-center text-info mb-3" style="border-bottom: 2px solid white; padding-bottom: 5px;">{{ ucfirst($category) }}</h5>
+
                 </div>
 
                 @foreach ($animeGroup as $anime)
                 <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+
                     <div class="card h-100">
+
                         <img src="{{ url("storage/{$anime->image}") }}" class="card-img card-img-top" alt="Cover of the anime {{ $anime->title }}">
                         <div class="card-img-overlay d-flex flex-column justify-content-between">
                             <div class="d-flex justify-content-end">
                                     <a href="{{ route('animes.show', $anime->id) }}" class="btn btn-primary btn-round" style="width: 49%">
                                         <i class="fa fa-eye"></i>
+
                                     </a>
+
                                     @if(Auth::check())
                                         <a href="{{ url('/animes/add/' . $anime->id) }}" class="btn btn-success btn-round" style="width: 49%">
                                             <i class="fa fa-plus"></i>
                                         </a>
                                     @endif
+
                                 </div>
+                                <div class="card-title text-white fw-bold" style="font-weight: bold;">{{ $anime->title }}</div>
+
                             </div>
+
                         </div>
+
                     </div>
                 @endforeach
             </div>
