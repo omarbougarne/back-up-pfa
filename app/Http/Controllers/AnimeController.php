@@ -153,20 +153,33 @@ public function deleteUserRating(Request $request, $id)
      * @return \Illuminate\Http\Response
      */
     public function show($id)
-{
-    $anime = Anime::with(['episodes', 'comments'])->findOrFail($id);
-    $comment = new Comment();
-    $userAnime = auth()->user()->animes()->find($anime->id)->pivot ?? null;
-    $userRating = $userAnime ? $userAnime->rating : null;
-    $userStatus = $userAnime ? $userAnime->status : null;
-    $userAvatar = auth()->user()->avatar;
-    $userName = auth()->user()->name;
-    if ($anime) {
-        return view('anime.show', compact('anime', 'comment', 'userRating', 'userStatus', 'userAvatar', 'userName'));
-    } else {
-        return abort(404);
+    {
+        $anime = Anime::with(['episodes', 'comments'])->findOrFail($id);
+        $comment = new Comment();
+        $userRating = null;
+        $userStatus = null;
+        $userAvatar = null;
+        $userName = null;
+
+        // Check if the user is authenticated
+        if(auth()->check()) {
+            // User is authenticated
+            $userAnime = auth()->user()->animes()->find($anime->id)->pivot ?? null;
+            if ($userAnime) {
+                $userRating = $userAnime->rating;
+                $userStatus = $userAnime->status;
+            }
+            $userAvatar = auth()->user()->avatar;
+            $userName = auth()->user()->name;
+        }
+
+        if ($anime) {
+            return view('anime.show', compact('anime', 'comment', 'userRating', 'userStatus', 'userAvatar', 'userName'));
+        } else {
+            return abort(404);
+        }
     }
-}
+
     public function updateStatus(Request $request, Anime $anime)
     {
         $validatedData = $request->validate([
